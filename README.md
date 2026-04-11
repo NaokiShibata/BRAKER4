@@ -615,7 +615,7 @@ my_species,genome.fa,,orthodb_proteins.fa,shortread.bam,,,,,,,isoseq.bam,,arthro
 
 If no extrinsic evidence is available, BRAKER4 falls back to GeneMark-ES training on the genome sequence alone. This will produce ab initio predictions and is the least accurate mode.
 
-> ⚠️ **Warning:** ES mode typically yields substantially lower accuracy than any evidence-based mode. Gene boundaries, exon-intron structures, and UTRs are all unreliable without extrinsic evidence. **We strongly recommend EP mode instead** whenever you do not have transcriptome data — it only requires a protein database such as a [pre-partitioned OrthoDB clade](#protein-database-preparation), which is freely available for all major eukaryotic lineages. EP mode consistently outperforms ES mode and runs on almost any genome. Use ES mode only when no suitable protein database exists for your target clade.
+> ⚠️ **Warning:** ES mode typically yields substantially lower accuracy than any evidence-based mode. Gene boundaries and exon-intron structures are unreliable without extrinsic evidence, and no UTRs are predicted (UTR decoration via StringTie2 requires transcript evidence, so neither ES nor EP produce UTRs). **We strongly recommend EP mode instead** whenever you do not have transcriptome data — it only requires a protein database such as a [pre-partitioned OrthoDB clade](#protein-database-preparation), which is freely available for all major eukaryotic lineages. EP mode consistently outperforms ES mode and runs on almost any genome. Use ES mode only when no suitable protein database exists for your target clade.
 
 ```csv
 sample_name,genome,genome_masked,protein_fasta,bam_files,fastq_r1,fastq_r2,sra_ids,varus_genus,varus_species,isoseq_bam,isoseq_fastq,busco_lineage,reference_gtf
