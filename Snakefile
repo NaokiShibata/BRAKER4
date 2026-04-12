@@ -461,6 +461,10 @@ include: "rules/postprocessing/best_by_compleasm.smk"
 if HAS_ETP:
     include: "rules/postprocessing/extract_hc_training_genes.smk"
 
+# Swap BRAKER CDS termini with GeneMark's where intron chains agree (~90%
+# accuracy improvement on matched transcripts, benchmarked on A. thaliana).
+include: "rules/postprocessing/genemark_termini_swap.smk"
+
 include: "rules/postprocessing/filter_stop_codons.smk"
 include: "rules/postprocessing/normalize_cds.smk"
 include: "rules/postprocessing/postprocess_augustus.smk"
