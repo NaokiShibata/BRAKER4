@@ -8,11 +8,11 @@ Dynamic workflow supporting all BRAKER modes:
 - IsoSeq: PacBio long-read + Proteins
 
 Authors: Henning Krall, Katharina J. Hoff
-Version: 0.1.0-beta
+Version: 0.2.0-beta
 """
 
 __author__ = "Henning Krall,Katharina J. Hoff"
-__version__ = "0.1.0-beta"
+__version__ = "0.2.0-beta"
 
 import pandas as pd
 import configparser
@@ -460,6 +460,10 @@ include: "rules/postprocessing/best_by_compleasm.smk"
 # HC gene extraction (for ETP and IsoSeq mode samples)
 if HAS_ETP:
     include: "rules/postprocessing/extract_hc_training_genes.smk"
+
+# Rescue multi-exon genes where both AUGUSTUS and GeneMark agree on the CDS
+# intron chain but TSEBRA dropped them (all introns must be hint-supported).
+include: "rules/postprocessing/both_agree_rescue.smk"
 
 include: "rules/postprocessing/filter_stop_codons.smk"
 include: "rules/postprocessing/normalize_cds.smk"
