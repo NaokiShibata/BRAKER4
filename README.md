@@ -141,9 +141,9 @@ To verify that BRAKER4 reproduces the gene-prediction accuracy of the original `
     </tr>
     <tr>
       <td>ETP</td>
-      <td align="right">83.6</td><td align="right"><b>83.9</b></td>
+      <td align="right">83.6</td><td align="right"><b>84.0</b></td>
       <td align="right">82.4</td><td align="right">82.2</td>
-      <td align="right">83.0</td><td align="right">83.0</td>
+      <td align="right">83.0</td><td align="right"><b>83.1</b></td>
       <td align="right">82.1</td><td align="right"><b>82.4</b></td>
       <td align="right">94.4</td><td align="right">94.3</td>
       <td align="right">87.8</td><td align="right"><b>87.9</b></td>
@@ -157,7 +157,7 @@ F1 = 2·Sn·Pr / (Sn + Pr), the harmonic mean of sensitivity and precision.
 
 ET and EP modes have low locus precision (~63–66%) in both pipelines because without the complementary evidence type, AUGUSTUS predicts many loci that are not in the curated Araport11 reference. This is a property of those modes generally, not a pipeline-specific issue.
 
-In ETP mode, BRAKER4 matches native braker.pl on locus F1 (83.0 / 83.0) and slightly beats it on exon F1 (87.9 vs 87.8), with exon precision essentially tied (94.3 vs 94.4). Across all three modes (ET, EP, ETP), BRAKER4 either matches or slightly beats the original braker.pl Perl pipeline.
+In ETP mode, BRAKER4 beats native braker.pl on locus F1 (83.1 vs 83.0) and on exon F1 (87.9 vs 87.8), with exon precision essentially tied (94.3 vs 94.4). Across all three modes (ET, EP, ETP), BRAKER4 either matches or slightly beats the original braker.pl Perl pipeline.
 
 What is BRAKER?
 ===============
@@ -486,6 +486,34 @@ snakemake \
 Adjust `slurm_partition`, `mem_mb`, `--cores`, and `--jobs` to your cluster configuration. The `--jobs` parameter controls how many SLURM jobs can be submitted simultaneously.
 
 We recommend running the Snakemake master process itself in a `screen` or `tmux` session, or submitting it as a long-running SLURM job, because the master process must stay alive for the entire duration of the pipeline.
+
+### Multi-sample runs and the `--keep-going` flag
+
+When annotating many genomes in a single `samples.csv`, individual samples can fail while others succeed. Typical failure points are:
+
+-   **RepeatModeler/RepeatMasker** failing on a genome with unusual repeat content or very short contigs.
+-   **GeneMark** failing to converge during unsupervised training (e.g. highly fragmented assemblies, extreme GC content, or very small genomes).
+-   **VARUS** failing to download RNA-Seq from SRA (network issues, species not in SRA, or insufficient public libraries).
+
+By default, Snakemake aborts the entire run when any sample fails. For bulk runs you almost certainly want to add `--keep-going` so that a failure in one sample does not kill the jobs for all other samples:
+
+```
+snakemake --keep-going \
+    --executor slurm \
+    --default-resources slurm_partition=batch mem_mb=120000 \
+    --cores 48 --jobs 48 \
+    --use-singularity \
+    --singularity-prefix .singularity_cache \
+    --singularity-args "-B /home -B /scratch"
+```
+
+After the run completes, check the Snakemake log for which samples failed and why.
+
+**How to handle failures:**
+
+-   **VARUS failures** are the easiest to fix. Remove the `varus_genus` and `varus_species` columns for the affected sample and provide a protein database instead. The sample will then run in EP mode (protein-only), which still produces good results.
+-   **RepeatModeler failures** can be worked around by masking the genome externally (e.g. with a different RepeatModeler version, or a custom repeat library) and providing the masked genome in the `genome_masked` column. BRAKER4 will then skip its built-in repeat masking and use your pre-masked genome directly.
+-   **GeneMark failures** are often genome-specific and difficult to fix from the BRAKER side. Please report GeneMark convergence issues to the GeneMark developers (Mark Borodovsky, Alex Lomsadze) with the genome FASTA and the GeneMark stderr log. Fixing these in BRAKER is not feasible because GeneMark is an external dependency.
 
 BRAKER4 pipeline modes
 -----------------------
