@@ -8,8 +8,10 @@ Split into two rules:
   1. run_cmscan: runs cmscan in Infernal container → tblout
   2. convert_infernal_to_gff3: converts tblout → GFF3 (no container, uses host Python)
 
-The Rfam database (Rfam.cm + Rfam.clanin) must be pre-downloaded and
-cmpress'd. The path is configured via rfam_path in config.ini [paths].
+The Rfam database (Rfam.cm + Rfam.clanin) must be pre-downloaded.
+The path is configured via rfam_path in config.ini [paths].
+cmpress indexing runs automatically inside the container on first use
+(flock-guarded so concurrent samples don't race).
 
 Container: quay.io/biocontainers/infernal:1.1.5--pl5321h031d066_2
 """
@@ -50,6 +52,22 @@ rule run_cmscan:
         echo "[INFO] Running Infernal cmscan against Rfam..." > {log}
         echo "[INFO] Rfam CM: $RFAM_CM" >> {log}
         echo "[INFO] Threads: {threads}" >> {log}
+
+        # Index Rfam.cm with cmpress if not already done.
+        # flock prevents races when multiple samples start concurrently.
+        if [ ! -f "$RFAM_CM.i1m" ]; then
+            echo "[INFO] Rfam index not found, running cmpress..." >> {log}
+            (
+                flock -x 9
+                # Re-check after acquiring lock (another job may have finished first)
+                if [ ! -f "$RFAM_CM.i1m" ]; then
+                    cmpress "$RFAM_CM" >> {log} 2>&1
+                    echo "[INFO] cmpress completed" >> {log}
+                else
+                    echo "[INFO] Another job already ran cmpress" >> {log}
+                fi
+            ) 9>"$RFAM_CM.lock"
+        fi
 
         cmscan \
             --cut_ga \
