@@ -81,13 +81,15 @@ digraph BRAKER4 {
 
         node [fillcolor = "#d9ead3"];
 
-        pp_mask  [label = "Repeat masking\n(RepeatModeler2 +\nRepeatMasker + TRF)",
+        pp_mask  [label = "Repeat masking\n(RepeatModeler2 +\nRepeatMasker + TRF\nor Red)",
                   style = "filled,rounded,dashed",
                   group = "spine"];
+        pp_minisplice [label = "minisplice\nsplice-site scoring",
+                  style = "filled,rounded,dashed"];
         pp_align [label = "Read alignment\nHISAT2 (short reads)\nminimap2 (IsoSeq)",
                   style = "filled,rounded,dashed"];
 
-        { rank = same; pp_align; pp_mask; }
+        { rank = same; pp_align; pp_mask; pp_minisplice; }
     }
 
     /* =====================================================
@@ -206,6 +208,8 @@ digraph BRAKER4 {
     in_genome -> pp_mask   [style = "dashed", label = "if unmasked"];
     in_rnaseq -> pp_align  [style = "dashed"];
     in_isoseq -> pp_align  [style = "dashed"];
+    in_genome -> pp_minisplice [style = "dashed", label = "if IsoSeq +\nuse_minisplice"];
+    pp_minisplice -> pp_align  [style = "dashed", label = "splice scores\n(--spsc)"];
 
     /* Inputs / Preprocessing → Hints  (spine edge has high weight) */
     in_genome  -> hints [weight = 20];

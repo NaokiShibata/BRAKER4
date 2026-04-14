@@ -588,6 +588,7 @@ BRAKER3_CONTAINER = config.get("braker3_image", "docker://teambraker/braker3:v3.
 ISOSEQ_CONTAINER = config.get("isoseq_image", "docker://teambraker/braker3:isoseq")
 MINIMAP2_CONTAINER = config.get("minimap2_image", "docker://katharinahoff/minimap-minisplice:v0.1")
 MINISPLICE_CONTAINER = config.get("minisplice_image", "docker://katharinahoff/minimap-minisplice:v0.1")
+RED_CONTAINER = config.get("red_image", "docker://quay.io/biocontainers/red:2018.09.10--h9948957_3")
 GFFCOMPARE_CONTAINER = config.get("gffcompare_image", "docker://quay.io/biocontainers/gffcompare:0.12.6--h9f5acd7_1")
 AGAT_CONTAINER = config.get("agat_image", "docker://quay.io/biocontainers/agat:1.4.1--pl5321hdfd78af_0")
 BARRNAP_CONTAINER = config.get("barrnap_image", "docker://quay.io/biocontainers/barrnap:0.9--hdfd78af_4")

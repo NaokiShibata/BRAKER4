@@ -426,6 +426,7 @@ augustus_chunksize = 3000000        # genome chunk size (bp) for parallel AUGUST
 augustus_overlap = 500000           # overlap (bp) between adjacent AUGUSTUS chunks
 run_ncrna = 0                       # set to 1 to annotate ncRNAs (tRNA, snoRNA, miRNA, lncRNA)
 run_best_by_compleasm = 1           # rescue dropped BUSCO genes after TSEBRA merge (set to 0 to disable)
+masking_tool = repeatmasker          # repeat masking engine: "repeatmasker" (default) or "red" (much faster)
 use_minisplice = 0                  # set to 1 to score splice sites with minisplice before minimap2 (IsoSeq only)
 no_cleanup = 0                      # set to 1 to keep all intermediate files (debugging only)
 
@@ -769,6 +770,23 @@ All four predictors' results are merged into a single final GFF3 annotation (`br
 When `run_ncrna = 0` (the default), no ncRNA annotation is performed and only the protein-coding `braker.gff3` is produced.
 
 **Requirements:** The Rfam database (~30 MB) must be downloaded once. Run `bash test_data/download_test_data.sh` to fetch it automatically. The database is stored in `shared_data/rfam/` and is shared across all samples; the Snakemake `infernal` rule indexes it with `cmpress` inside the Infernal container on first use.
+
+### masking_tool
+
+Default: `repeatmasker`. Set to `red` to use [Red (REpeat Detector)](http://toolsmith.ens.utulsa.edu) instead of RepeatModeler2 + RepeatMasker + TRF.
+
+Red detects repeats directly from the genome sequence using a machine-learning approach, without building a repeat library first. This makes it much faster than the RepeatModeler/RepeatMasker workflow (minutes instead of hours/days for large genomes). The trade-off is that Red does not classify repeat families -- it only soft-masks them.
+
+For BRAKER4's purposes (providing a soft-masked genome to GeneMark and AUGUSTUS), both approaches produce usable results. Use `red` when runtime matters more than repeat classification.
+
+| | `repeatmasker` (default) | `red` |
+|---|---|---|
+| Container | `dfam/tetools:latest` (~3.5 GB) | `quay.io/biocontainers/red:2018.09.10` (~13 MB) |
+| Runtime (human genome) | hours to days | minutes |
+| Repeat classification | yes (families, superfamilies) | no (masked regions only) |
+| Repeat library | built de novo (RepeatModeler) | not needed |
+
+Can also be set via `BRAKER4_MASKING_TOOL=red`.
 
 ### use_minisplice
 

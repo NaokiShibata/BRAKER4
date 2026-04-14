@@ -65,6 +65,7 @@ _env_overrides = {
     'BRAKER4_ALLOW_HINTED_SPLICESITES':       ('PARAMS', 'allow_hinted_splicesites'),
     'BRAKER4_RUN_NCRNA':                      ('PARAMS', 'run_ncrna'),
     'BRAKER4_RUN_BEST_BY_COMPLEASM':          ('PARAMS', 'run_best_by_compleasm'),
+    'BRAKER4_MASKING_TOOL':                   ('PARAMS', 'masking_tool'),
     'BRAKER4_USE_MINISPLICE':                 ('PARAMS', 'use_minisplice'),
     'BRAKER4_USE_VARUS':                      ('PARAMS', 'use_varus'),
     'BRAKER4_SKIP_SINGLE_EXON_DOWNSAMPLING':  ('PARAMS', 'skip_single_exon_downsampling'),
@@ -209,6 +210,14 @@ config['run_ncrna'] = config_parser.getboolean(
 config['run_best_by_compleasm'] = config_parser.getboolean(
     'PARAMS', 'run_best_by_compleasm', fallback=True
 )
+
+config['masking_tool'] = config_parser.get(
+    'PARAMS', 'masking_tool', fallback='repeatmasker'
+).strip().lower()
+if config['masking_tool'] not in ('repeatmasker', 'red'):
+    raise ValueError(
+        f"masking_tool must be 'repeatmasker' or 'red', got '{config['masking_tool']}'"
+    )
 
 config['use_minisplice'] = config_parser.getboolean(
     'PARAMS', 'use_minisplice', fallback=False
@@ -370,7 +379,10 @@ if GLOBAL_DATA_TYPES['has_varus']:
 if GLOBAL_DATA_TYPES['has_isoseq_fastq']:
     print("  ✓ minimap2 IsoSeq FASTQ/FASTA alignment")
 if GLOBAL_DATA_TYPES['needs_masking']:
-    print("  ✓ RepeatModeler2 + RepeatMasker (genome masking)")
+    if config['masking_tool'] == 'red':
+        print("  ✓ Red repeat masking (fast, no repeat library)")
+    else:
+        print("  ✓ RepeatModeler2 + RepeatMasker (genome masking)")
 if GLOBAL_DATA_TYPES['has_reference_gtf']:
     print("  ✓ gffcompare evaluation against reference annotation")
 print()
@@ -514,7 +526,10 @@ if GLOBAL_DATA_TYPES['has_proteins']:
 
 # Include masking rules (conditional)
 if GLOBAL_DATA_TYPES['needs_masking']:
-    include: "rules/preprocessing/run_masking.smk"
+    if config['masking_tool'] == 'red':
+        include: "rules/preprocessing/run_red_masking.smk"
+    else:
+        include: "rules/preprocessing/run_masking.smk"
 
 # Include ncRNA rules (optional). When run_ncrna=1 the pipeline annotates:
 #   - rRNA via barrnap (always part of run_ncrna)

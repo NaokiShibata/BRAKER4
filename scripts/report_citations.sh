@@ -571,6 +571,33 @@ BIBEOF
 }
 BIBEOF
             ;;
+        red)
+            echo "Girgis, H. Z. (2015). Red: an intelligent, rapid, accurate tool for detecting repeats de-novo on the genomic scale. BMC Bioinformatics, 16, 227. doi:10.1186/s12859-015-0654-5" >> "$txt_file"
+            cat >> "$bib_file" << 'BIBEOF'
+@article{red,
+  author  = {Girgis, Hani Z.},
+  title   = {Red: an intelligent, rapid, accurate tool for detecting repeats de-novo on the genomic scale},
+  journal = {BMC Bioinformatics},
+  volume  = {16},
+  pages   = {227},
+  year    = {2015},
+  doi     = {10.1186/s12859-015-0654-5}
+}
+BIBEOF
+            ;;
+        minisplice)
+            echo "Li, H. (2025). Scoring splice sites with a small CNN improves alignment junction accuracy. arXiv:2506.12986." >> "$txt_file"
+            cat >> "$bib_file" << 'BIBEOF'
+@article{minisplice,
+  author  = {Li, Heng},
+  title   = {Scoring splice sites with a small {CNN} improves alignment junction accuracy},
+  journal = {arXiv preprint},
+  year    = {2025},
+  eprint  = {2506.12986},
+  archiveprefix = {arXiv}
+}
+BIBEOF
+            ;;
         *)
             echo "WARNING: Unknown citation key: $key" >&2
             ;;
