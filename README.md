@@ -446,6 +446,9 @@ enable = 0
 # min_score = 0.5                   # reliability-index cutoff for the summary
 # additional_params =               # extra flags passed to fantasia_pipeline.py
 
+[OMARK]
+# omamer_db = /path/to/LUCA.h5      # OMAmer database for OMArk (used only when run_omark = 1)
+
 [SLURM_ARGS]
 cpus_per_task = 48
 mem_of_node = 120000                # memory in MB
@@ -784,6 +787,15 @@ If you prefer to keep the two caches separate (e.g. an existing compleasm cache 
 ### run_omark
 
 Set to `1` to run OMArk quality evaluation. This requires the LUCA.h5 database (~8.8 GB). OMArk assesses the quality of your gene set by comparing predicted proteins against the OMA database.
+
+Point BRAKER4 at your local copy of LUCA.h5 via an `[OMARK]` section in `config.ini`:
+
+```ini
+[OMARK]
+omamer_db = /path/to/LUCA.h5
+```
+
+If unset, BRAKER4 falls back to `test_data/LUCA.h5` (the location used by the test scenarios). The value can also be overridden via the environment variable `BRAKER4_OMAMER_DB`.
 
 ### no_cleanup
 

@@ -41,7 +41,7 @@ config_parser.read(config_ini_path)
 # config.ini. Variables follow the pattern BRAKER4_<SECTION>_<KEY>, except
 # for the well-known SLURM_ARGS keys which use the short BRAKER4_<KEY> form.
 # Anything set in the environment wins over the file.
-for section in ('PARAMS', 'SLURM_ARGS', 'fantasia'):
+for section in ('PARAMS', 'SLURM_ARGS', 'fantasia', 'OMARK'):
     if not config_parser.has_section(section):
         config_parser.add_section(section)
 
@@ -59,6 +59,7 @@ _env_overrides = {
     'BRAKER4_USE_COMPLEASM_HINTS':            ('PARAMS', 'use_compleasm_hints'),
     'BRAKER4_SKIP_BUSCO':                     ('PARAMS', 'skip_busco'),
     'BRAKER4_RUN_OMARK':                      ('PARAMS', 'run_omark'),
+    'BRAKER4_OMAMER_DB':                      ('OMARK', 'omamer_db'),
     'BRAKER4_NO_CLEANUP':                     ('PARAMS', 'no_cleanup'),
     'BRAKER4_TRANSLATION_TABLE':              ('PARAMS', 'translation_table'),
     'BRAKER4_GC_DONOR':                       ('PARAMS', 'gc_donor'),
@@ -149,7 +150,7 @@ config['run_omark'] = config_parser.getboolean(
 )
 
 config['omamer_db'] = config_parser.get(
-    'OMARK', 'omamer_db', fallback=False
+    'OMARK', 'omamer_db', fallback=None
 )
 
 config['no_cleanup'] = config_parser.getboolean(
