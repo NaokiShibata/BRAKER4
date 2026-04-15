@@ -143,6 +143,7 @@ YAMLEOF
         # valid GeneMark-ETP run. Our isoseq variant writes proteins_isoseq.fa,
         # so symlink the expected name. -f makes the rule re-runnable.
         ln -sf $OUTDIR_ABS/proteins_isoseq.fa $OUTDIR_ABS/proteins.fa
+        ln -s $OUTDIR_ABS/rnaseq/hints/proteins_isoseq.fa $OUTDIR_ABS/rnaseq/hints/proteins.fa
         rm -f {output.etp_hints}
         if get_etp_hints.py \
             --genemark_scripts /opt/ETP/bin \
