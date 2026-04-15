@@ -97,7 +97,7 @@ rule run_augustus_hints_iter2:
             --joblist=$AUGUSTUS_TMP_ABS/aug_iter2.job.lst \
             --jobprefix=aug_iter2_ \
             --partitionHints \
-            --command "augustus --species={params.species_name} --AUGUSTUS_CONFIG_PATH={params.aug_config} --extrinsicCfgFile=$EXTRINSIC_ABS --alternatives-from-evidence=true --UTR=off --exonnames=on --codingseq=on --allow_hinted_splicesites={params.allow_hinted_splicesites}" \
+            --command "augustus --species={params.species_name} --AUGUSTUS_CONFIG_PATH={params.aug_config} --extrinsicCfgFile=$EXTRINSIC_ABS --alternatives-from-evidence=true --UTR=off --exonnames=on --codingseq=on --allow_hinted_splicesites={params.allow_hinted_splicesites} --softmasking=1" \
             2>/dev/null
         popd > /dev/null
 

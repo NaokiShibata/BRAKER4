@@ -190,7 +190,7 @@ rule run_augustus_hints:
             --joblist=$JOB_LST_ABS \
             --jobprefix=aug_hints_ \
             --partitionHints \
-            --command "augustus --species={params.species_name} --AUGUSTUS_CONFIG_PATH={params.aug_config} --extrinsicCfgFile=$EXTRINSIC_ABS --alternatives-from-evidence=true --UTR=off --exonnames=on --codingseq=on --allow_hinted_splicesites={params.allow_hinted_splicesites}" \
+            --command "augustus --species={params.species_name} --AUGUSTUS_CONFIG_PATH={params.aug_config} --extrinsicCfgFile=$EXTRINSIC_ABS --alternatives-from-evidence=true --UTR=off --exonnames=on --codingseq=on --allow_hinted_splicesites={params.allow_hinted_splicesites} --softmasking=1" \
             2> $OUTPUT_DIR_ABS/createAugustusJoblist.err
 
         # Return to original directory
